@@ -14,3 +14,5 @@ SharpRaven/obj/Release/SharpRaven.csproj.FileListAbsolute.txt
 SharpRaven.CaptureTest/obj/x86/Release/SharpRaven.CaptureTest.csproj.FileListAbsolute.txt
 
 *.manifest
+
+*.suo
