@@ -1,8 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace SharpRaven.Data {
     public class SentryException {
+
+        public SentryException(Exception e)
+        {
+            this.Module = e.Source;
+            this.Type = e.Message;
+            this.Value = e.Message;
+        }
+
         /// <summary>
         /// The type of exception.
         /// </summary>
@@ -18,5 +27,6 @@ namespace SharpRaven.Data {
         /// </summary>
         [JsonProperty(PropertyName = "module")]
         public string Module;
+
     }
 }
