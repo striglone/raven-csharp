@@ -31,6 +31,7 @@ namespace SharpRaven {
         public int Port { get; set; }
 
         public DSN(string dsn) {
+            bool useSSl = dsn.StartsWith("https", StringComparison.InvariantCultureIgnoreCase);
             Uri URI = new Uri(dsn);
 
             // Set all info
@@ -39,7 +40,11 @@ namespace SharpRaven {
             Port = GetPort(URI);
             ProjectID = GetProjectID(URI);
 
-            SentryURI = @"https://" + URI.DnsSafeHost + ":" + Port + @"/api/" + ProjectID + "/store/";
+            SentryURI = String.Format(@"{0}://{1}:{2}/api/{3}/store/", 
+                                        useSSl ? "https" : "http",
+                                        URI.DnsSafeHost,
+                                        Port,
+                                        ProjectID);
         }
 
         /// <summary>
