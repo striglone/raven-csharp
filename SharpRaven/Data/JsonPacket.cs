@@ -1,6 +1,7 @@
 ﻿using System;
-using Newtonsoft.Json;
 using System.Collections.Generic;
+
+using Newtonsoft.Json;
 
 namespace SharpRaven.Data {
     public class JsonPacket {
@@ -24,8 +25,10 @@ namespace SharpRaven.Data {
         /// The record severity.
         /// Defaults to error.
         /// </summary>
-        //[JsonProperty(PropertyName = "level", NullValueHandling = NullValueHandling.Ignore)]
-        //public ErrorLevel Level { get; set; }
+        [JsonProperty(PropertyName = "level", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ErrorLevel Level { get; set; }
+       
         /// <summary>
         /// Indicates when the logging record was created (in the Sentry client).
         /// Defaults to DateTime.UtcNow()
@@ -85,11 +88,11 @@ namespace SharpRaven.Data {
             Message = e.Message;
             Culprit = e.TargetSite.Name;
             Project = project;
-            ServerName = System.Environment.MachineName;
+            Level = ErrorLevel.error;
 
             Exception = new SentryException(e);
             Exception.Module = e.Source;
-            Exception.Type = e.Message;
+            Exception.Type = e.GetType().Name;
             Exception.Value = e.Message;
 
             this.StackTrace = new SentryStacktrace(e);
@@ -104,16 +107,22 @@ namespace SharpRaven.Data {
                     Version = m.ModuleVersionId.ToString()
                 });
             }*/
+
+            //The current hostname
+            ServerName = System.Environment.MachineName;
+
             // Create timestamp
             //TimeStamp = DateTime.UtcNow;
+            
             // Default logger.
-            Logger = "root";
+            Logger = String.Format("{0}\\{1}", System.Environment.UserDomainName, System.Environment.UserName);
+            
             // Default error level.
-            //Level = ErrorLevel.error;
+            Level = ErrorLevel.warning;
+            
             // Create a guid.
             EventID = Guid.NewGuid().ToString().Replace("-", String.Empty);
-            // Create an exception.
-            //Exception = new SentryException();
+            
             // Project
             Project = "default";
         }
