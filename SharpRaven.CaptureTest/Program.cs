@@ -7,6 +7,7 @@ namespace SharpRaven.CaptureTest {
     class Program {
         static void Main(string[] args) {
             Console.WriteLine("Initializing RavenClient.");
+            
             RavenClient rc = new RavenClient("https://7d6466e66155431495bdb4036ba9a04b:4c1cfeab7ebd4c1cb9e18008173a3630@app.getsentry.com/3739");
 
             PrintInfo("Sentry Uri: " + rc.CurrentDSN.SentryURI);
@@ -17,11 +18,14 @@ namespace SharpRaven.CaptureTest {
 
             Console.WriteLine("Causing division by zero exception.");
             try {
+
+                rc.CaptureMessage("About to try the amazingly silly act of dividing by 0...");
+
                 Program.PerformDivideByZero();
                 Console.WriteLine("Failed.");
             } catch (Exception e) {
                 Console.WriteLine("Captured: " + e.Message);
-                int id = rc.CaptureEvent(e);
+                int id = rc.CaptureException(e);
                 Console.WriteLine("Sent packet: " + id);
             }
 
