@@ -5,22 +5,26 @@ using Newtonsoft.Json;
 
 namespace SharpRaven.Data {
     public class JsonPacket {
+
         /// <summary>
         /// Hexadecimal string representing a uuid4 value.
         /// </summary>
         [JsonProperty(PropertyName = "event_id", NullValueHandling = NullValueHandling.Ignore)]
         public string EventID { get; set; }
+
         /// <summary>
         /// String value representing the project
         /// </summary>
         [JsonProperty(PropertyName = "project", NullValueHandling = NullValueHandling.Ignore)]
         public string Project { get; set; }
+
         /// <summary>
         /// Function call which was the primary perpetrator of this event.
         /// A map or list of tags for this event.
         /// </summary>
         [JsonProperty(PropertyName = "culprit", NullValueHandling = NullValueHandling.Ignore)]
         public string Culprit { get; set; }
+
         /// <summary>
         /// The record severity.
         /// Defaults to error.
@@ -43,27 +47,38 @@ namespace SharpRaven.Data {
         /// </summary>
         [JsonProperty(PropertyName = "logger", NullValueHandling = NullValueHandling.Ignore)]
         public string Logger { get; set; }
+
         /// <summary>
         /// A string representing the platform the client is submitting from. 
         /// This will be used by the Sentry interface to customize various components in the interface.
         /// </summary>
         [JsonProperty(PropertyName = "platform", NullValueHandling = NullValueHandling.Ignore)]
         public string Platform { get; set; }
+
         /// <summary>
         /// User-readable representation of this event
         /// </summary>
         [JsonProperty(PropertyName = "message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
+
         /// <summary>
         /// A map or list of tags for this event.
         /// </summary>
         [JsonProperty(PropertyName = "tags", NullValueHandling = NullValueHandling.Ignore)]
-        public Tag[] Tags;
+        public string[][] Tags;
+
+        /// <summary>
+        /// An arbitrary mapping of additional metadata to store with the event.
+        /// </summary>
+        [JsonProperty(PropertyName = "extra", NullValueHandling = NullValueHandling.Ignore)]
+        public object Extra;
+
         /// <summary>
         /// Identifies the host client from which the event was recorded.
         /// </summary>
         [JsonProperty(PropertyName = "server_name", NullValueHandling = NullValueHandling.Ignore)]
         public string ServerName { get; set; }
+        
         /// <summary>
         /// A list of relevant modules (libraries) and their versions.
         /// 
@@ -86,7 +101,7 @@ namespace SharpRaven.Data {
         public JsonPacket(string project, Exception e) {
             Initialize();
             Message = e.Message;
-            Culprit = e.TargetSite.Name;
+            Culprit = String.Format("{0}.{1}", e.TargetSite.ReflectedType.FullName, e.TargetSite.Name);
             Project = project;
             Level = ErrorLevel.error;
 
@@ -115,8 +130,9 @@ namespace SharpRaven.Data {
             //TimeStamp = DateTime.UtcNow;
             
             // Default logger.
-            Logger = String.Format("{0}\\{1}", System.Environment.UserDomainName, System.Environment.UserName);
-            
+            //Logger = String.Format("{0}\\{1}", System.Environment.UserDomainName, System.Environment.UserName);
+            Logger = "root";
+
             // Default error level.
             Level = ErrorLevel.warning;
             
@@ -137,11 +153,6 @@ namespace SharpRaven.Data {
             //return @"{""project"": ""SharpRaven"",""event_id"": ""fc6d8c0c43fc4630ad850ee518f1b9d0"",""culprit"": ""my.module.function_name"",""timestamp"": ""2012-11-11T17:41:36"",""message"": ""SyntaxError: Wattttt!"",""sentry.interfaces.Exception"": {""type"": ""SyntaxError"",""value"": ""Wattttt!"",""module"": ""__builtins__""}""}";
         }
 
-    }
-
-    public class Tag {
-        public string Name;
-        public string Value;
     }
 
     public class Module {

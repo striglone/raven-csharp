@@ -1,9 +1,10 @@
 ﻿using System;
-using SharpRaven.Data;
-using System.Net;
 using System.IO;
-using SharpRaven.Utilities;
+using System.Net;
 using System.Web;
+
+using SharpRaven.Data;
+using SharpRaven.Utilities;
 
 namespace SharpRaven {
     public class RavenClient {
@@ -33,16 +34,38 @@ namespace SharpRaven {
             return 0;
         }
 
-        public int CaptureException(Exception e, string[] tags)
+        public int CaptureException(Exception e, string[][] tags, object extra = null)
         {
+            JsonPacket packet = new JsonPacket(CurrentDSN.ProjectID, e);
+            packet.Level = ErrorLevel.error;
+            packet.Tags = tags;
+            packet.Extra = extra;
+
+            Send(packet, CurrentDSN);
+
             return 0;
         }
 
-        public int CaptureMessage(string message, ErrorLevel level = ErrorLevel.info, string[] tags = null)
+        public int CaptureException(string message, Exception e, string[][] tags, object extra = null)
+        {
+            JsonPacket packet = new JsonPacket(CurrentDSN.ProjectID, e);
+            packet.Message = message;
+            packet.Level = ErrorLevel.error;
+            packet.Tags = tags;
+            packet.Extra = extra;
+
+            Send(packet, CurrentDSN);
+
+            return 0;
+        }
+
+        public int CaptureMessage(string message, ErrorLevel level = ErrorLevel.info, string[][] tags = null, object extra = null)
         {
             JsonPacket packet = new JsonPacket(CurrentDSN.ProjectID);
             packet.Message = message;
             packet.Level = level;
+            packet.Tags = tags;
+            packet.Extra = extra;
 
             Send(packet, CurrentDSN);
 
@@ -113,7 +136,7 @@ namespace SharpRaven {
         }
 
         [Obsolete("The more common CaptureException method should be used")]
-        public int CaptureEvent(Exception e, string[] tags)
+        public int CaptureEvent(Exception e, string[][] tags)
         {
             return this.CaptureException(e, tags);
         }
