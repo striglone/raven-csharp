@@ -101,7 +101,12 @@ namespace SharpRaven.Data {
         public JsonPacket(string project, Exception e) {
             Initialize();
             Message = e.Message;
-            Culprit = String.Format("{0}.{1}", e.TargetSite.ReflectedType.FullName, e.TargetSite.Name);
+
+            if (e.TargetSite != null)
+            {
+                Culprit = String.Format("{0}.{1}", e.TargetSite.ReflectedType.FullName, e.TargetSite.Name);
+            }
+
             Project = project;
             Level = ErrorLevel.error;
 
